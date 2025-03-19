@@ -834,6 +834,12 @@ hr.white-hr {
     font-size: 46px;
     color: #ffffff;
 }
+.about-us-sub{
+    background-image: url(../images/subheading/abouthorizontal.jpg);
+    background-position: center , center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 .who-we-are-sub{
     background-image: url(../images/subheading/who-we-are.jpg);
     background-position: center , center;
