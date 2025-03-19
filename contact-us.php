@@ -1,113 +1,3 @@
-<?php
-include "captcha.php";
-$success = false;
-$failed = "";
-$error = "";
-$mobilenoerr = "";
-$captchaerror = "";
-
-$name = $email = $mobileno = $message = "";
-if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) { 
-
-    if (
-        isset($_POST['fullname']) && 
-        isset($_POST['email']) && 
-        isset($_POST['phone']) && 
-        isset($_POST['message']) && 
-        isset($_POST['captcha'])
-      
-    ) {
-      if (isset($_POST['fullname']) && preg_match('/^[a-zA-Z]+$/', $_POST['fullname'])) {
-        $name = $_POST['fullname'];
-      } else {
-          $nameerr = "Invalid name";
-      }
-
-      if(isset($_POST['email']) && filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
-        $email = $_POST['email'];
-      } else {
-        $emailerr = "Invalid Email address";
-      }
-    
-      if(($_POST['phone']) && preg_match('/^\d+$/', $_POST['phone'])){
-        $mobileno = $_POST['phone'];
-      }
-      else{
-        $mobilenoerr = "Invalid mobile number";
-      }
-
-        $name = htmlspecialchars($_POST['fullname']);
-        $email = htmlspecialchars($_POST['email']);
-        $message = htmlspecialchars($_POST['message']);
-        $submittedCaptcha = isset($_POST['captcha']) ? $_POST['captcha'] : '';
-        $generatedCaptcha = $_SESSION['captcha'];
-
-        if ($submittedCaptcha != $generatedCaptcha) {
-            $captchaerror = "Invalid captcha";
-            $name = htmlspecialchars($_POST['fullname']);
-            $email = htmlspecialchars($_POST['email']);
-            $mobileno =($_POST['phone']);
-            $message = htmlspecialchars($_POST['message']);
-            $_SESSION['captcha'] = generateCaptcha(); 
-        }
-        elseif (!$error && !$nameerr && !$mobilenoerr && !$emailerr && !$captchaerror) {
-            $to = 'anithin271@gmail.com';
-            $subject = 'Contact Us Form';
-            $mailBody = "Details:\nName: $name\nEmail: $email\nMobile No.: $mobileno\nMessage: $message\n";
-            $headers = 'From: ' . $email . "\r\n" .
-                'Reply-To: ' . $email . "\r\n" .
-                'X-Mailer: PHP/' . phpversion();
-
-            // Attempt to send the email
-            $mailSent = mail($to, $subject, $mailBody, $headers);
-        
-            if ($mailSent) {
-                // Clear form data
-                $name = $email = $mobileno = $message = "";
-                $_SESSION['form_submitted'] = true;
-                header("Location: " . $_SERVER['REQUEST_URI']); 
-                exit();
-               
-            } else {
-                $failed = "Mail not sent please try again";
-            }
-        }
-    } else {
-        $error = "Invalid Details";
-    }
-    } else {
- $_SESSION['captcha'] = generateCaptcha();
-}
-?>
-
-<script>
-    setTimeout(function() {
-        document.getElementById('successMessage').style.display = 'none';
-        document.getElementById('failMessage').style.display = 'none';
-        document.getElementById('errormesssages').style.display = 'none';
-        document.getElementById('captchaError').style.display = 'none';
-        document.getElementById('nameerr').style.display = 'none';
-        document.getElementById('mobilenoerr').style.display = 'none';
-        document.getElementById('emailerr').style.display = 'none';
-
-    }, 5000); // 5 seconds for display error msg
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let formSubmitted = <?php echo json_encode( $_SESSION['form_submitted'] ); ?>;
-        let captchaerror = <?php echo json_encode( $captchaerror ); ?>;
-        let error = <?php echo json_encode( $error ); ?>;
-        let failed = <?php echo json_encode( $failed ); ?>;
-        let nameerr = <?php echo json_encode($nameerr ); ?>;
-        let emailerr = <?php echo json_encode($emailerr ); ?>;
-        let mobilenoerr = <?php echo json_encode($mobilenoerr ); ?>;
-
-        if (formSubmitted || captchaerror || failed || error || nameerr || emailerr || mobilenoerr ) {
-            document.getElementById("form-section").scrollIntoView({ behavior: 'smooth' });
-        }
-    });
-</script>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -152,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
 <div class="nav-bottom">
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container">
-          <a href="/">
+          <a href="index.html">
         <div class="logo">
           <img src="images/logo/logo.png" alt="Logo" class="w-100">
         </div>
@@ -163,22 +53,22 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/">Home</a>
+            <a class="nav-link active" aria-current="page" href="index.html">Home</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               About Us
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="/about-us">About Us</a></li>
-              <li><a class="dropdown-item" href="/who-we-are">Who We Are</a></li>
+              <li><a class="dropdown-item" href="about-us.html">About Us</a></li>
+              <li><a class="dropdown-item" href="who-we-are.html">Who We Are</a></li>
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/gallery">Gallery</a>
+            <a class="nav-link" href="gallery.html">Gallery</a>
           </li>
           <li class="nav-item me-0">
-            <a class="nav-link" href="/contact-us">Contact Us</a>
+            <a class="nav-link" href="contact-us.html">Contact Us</a>
           </li>
         </ul>
 
@@ -237,45 +127,26 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
         </div>
       </div>
       <form method="post" id="form-section">
-        <div id="successMessage" <?php if (isset($_SESSION['form_submitted']) && $_SESSION['form_submitted']) { echo 'style="display:block"'; unset($_SESSION['form_submitted']); } else { echo 'style="display:none"'; } ?>>
-            Contact Us Form submitted successfully.
-        </div>
-        <div id="failMessage" class="errorMesssage" <?php if ($failed) echo 'style="display:block"'; else echo 'style="display:none"'; ?>>
-          <?php echo $failed; ?>
-        </div>
-        <div id="errormesssages" class="errorMesssage" <?php if ($error) echo 'style="display:block"'; else echo 'style="display:none"'; ?>>
-          <?php echo $error; ?>
-        </div>
-
-        <div id="nameerr" class="errorMesssage" <?php if ($nameerr) echo 'style="display:block"'; else echo 'style="display:none"'; ?>>
-          <?php echo $nameerr; ?>
-        </div>
 
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label">Name</label>
-          <input type="text" name="fullname" class="form-control" id="name" aria-describedby="emailHelp" value="<?php echo isset($name) ? $name: ''; ?>" required>
-        </div>
-
-        <div id="emailerr" class="errorMesssage" <?php if ($emailerr) echo 'style="display:block"'; else echo 'style="display:none"'; ?>>
-          <?php echo $emailerr; ?>
+          <input type="text" name="fullname" class="form-control" id="name" aria-describedby="emailHelp" value="" required>
         </div>
 
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label">Email address</label>
-          <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" value="<?php echo isset($email) ? $email:''; ?>" required>
+          <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" value="" required>
         </div>
-        <div id="mobilenoerr" class="errorMesssage" <?php if ($mobilenoerr) echo 'style="display:block"'; else echo 'style="display:none"'; ?>>
-          <?php echo $mobilenoerr; ?>
-        </div>
+      
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label">Phone Number</label>
-          <input type="tel" name="phone" class="form-control" id="phone" aria-describedby="emailHelp" value="<?php echo isset($mobileno) ? $mobileno:''; ?>" required>
+          <input type="tel" name="phone" class="form-control" id="phone" aria-describedby="emailHelp" value="" required>
         </div>
         <div class="mb-3">
           <label for="exampleTextarea" class="form-label">Comments</label>
-          <textarea class="form-control" name="message"  id="message" rows="3" placeholder="Enter your message here..." required><?php echo isset($message) ? $message: ''; ?></textarea>
+          <textarea class="form-control" name="message"  id="message" rows="3" placeholder="Enter your message here..." required></textarea>
         </div>
-        <div id="captchaError" class="errorMesssage"<?php if ($captchaerror) echo 'style="display:block"'; else echo 'style="display:none"'; ?>><?php echo $captchaerror; ?></div>
+        
         <div class="mb-3 captcha-wrap">
           <div class="captcha-number">
             <span class="captcha" id="captchaContainer"><p class="mb-0"><?php echo  $_SESSION['captcha']; ?></p></span>
@@ -300,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
 <!-- FOOTER :: BEGIN -->
 <div class="footer-wrap">
   <div class="container">
-    <a href="/">
+    <a href="index.html">
       <div class="footer-logo mb-3 text-center">
         <img src="images/logo/logo.png" alt="" class="w-50">
       </div>
@@ -324,10 +195,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
           <h5>Quick Links</h5>
         </div>
         <ul class="footer-link">
-          <li><a href="/about-us">About Us</a></li>
-          <li><a href="/who-we-are">Who We Are</a></li>
-          <li><a href="/gallery">Gallery</a></li>
-          <li><a href="/contact-us">Contact Us</a></li>
+          <li><a href="about-us.html">About Us</a></li>
+          <li><a href="who-we-are.html">Who We Are</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="contact-us.html">Contact Us</a></li>
         </ul>
       </div>
       
